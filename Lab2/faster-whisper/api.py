@@ -1,18 +1,19 @@
 from fastapi import FastAPI, UploadFile, File, Form
 from faster_whisper import WhisperModel
 import os
+import uuid
 
-app = FastAPI(title="Persistent ASR Transcription Service")
+app = FastAPI(title="ASR Transcription Service")
 
-# 持久化加载模型（容器启动时加载一次，不重复加载）
-model = WhisperModel("base", device="cpu", compute_type="int8")
+# 全局模型（不会被覆盖）
+asr_model = WhisperModel("base", device="cpu", compute_type="int8")
 
-# 健康检查接口
+# 健康检查
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
 
-# 模型列表接口
+# 模型列表
 @app.get("/v1/models")
 async def list_models():
     return {
@@ -21,22 +22,21 @@ async def list_models():
         ]
     }
 
-# 语音转写接口（兼容 OpenAI 格式）
+# 核心转写接口（修复重名问题！）
 @app.post("/v1/audio/transcriptions")
 async def transcriptions(
     file: UploadFile = File(...),
-    model: str = Form(...)
+    model: str = Form(...)  # 这个是参数，不会覆盖全局模型
 ):
-    # 保存临时音频
-    temp_file = f"temp_{file.filename}"
+    temp_file = f"temp_{uuid.uuid4()}.wav"
+
+    # 保存上传的音频
     with open(temp_file, "wb") as f:
         f.write(await file.read())
 
-    # 转写
-    segments, info = model.transcribe(temp_file, language="zh")
+    # 这里用 asr_model 而不是 model！
+    segments, info = asr_model.transcribe(temp_file, language="zh")
     text = "".join([seg.text for seg in segments])
 
-    # 删除临时文件
     os.remove(temp_file)
-
     return {"text": text}
