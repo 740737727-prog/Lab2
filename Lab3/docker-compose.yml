@@ -13,22 +13,31 @@ services:
         --gpu-memory-utilization 0.50
         --max-model-len 4096
         --max-num-batched-tokens 2048
+    ports:
+      - "8000:8000"
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     ports:
-      - "3000:8080"
+      - "8080:8080"
     volumes:
       - open-webui-data:/app/backend/data
-    # TODO: add depends_on so that open-webui starts after the backend services
+    depends_on:
+      - vllm
+      - asr
+      - tts
 
   asr:
     image: faster-whisper:fastapi
-    # TODO: add runtime for GPU access
+    runtime: nvidia
+    ports:
+      - "5092:8000"
 
   tts:
     image: dustynv/kokoro-tts:fastapi-r36.4.0-cu128-24.04
-    # TODO: add runtime for GPU access
+    runtime: nvidia
+    ports:
+      - "8880:8000"
 
 volumes:
   open-webui-data:
