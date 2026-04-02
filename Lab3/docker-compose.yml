@@ -10,7 +10,7 @@ services:
       - /opt/models/Qwen3-4B-quantized.w4a16:/root/.cache/huggingface/Qwen3-4B-quantized.w4a16
     command: >
       vllm serve /root/.cache/huggingface/Qwen3-4B-quantized.w4a16
-        --gpu-memory-utilization 0.50
+        --gpu-memory-utilization 0.35
         --max-model-len 4096
         --max-num-batched-tokens 2048
     ports:
