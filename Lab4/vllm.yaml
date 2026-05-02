@@ -23,7 +23,7 @@ spec:
         - --gpu-memory-utilization
         - "0.25"
         - --max-model-len
-        - "4096"
+        - "1024"
         - --max-num-batched-tokens
         - "2048"
         resources:
