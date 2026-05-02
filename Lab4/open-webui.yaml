@@ -7,7 +7,7 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi  # 申请 2Gi 存储
+      storage: 2Gi
 
 ---
 apiVersion: apps/v1
@@ -29,13 +29,16 @@ spec:
         image: ghcr.io/open-webui/open-webui:main
         ports:
         - containerPort: 8080
+        env:
+        - name: WEBUI_URL
+          value: "http://0.0.0.0:30002"  # 这里必须和你改的端口一致
         volumeMounts:
         - name: data
-          mountPath: /app/backend/data  # 挂载数据目录
+          mountPath: /app/backend/data
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: open-webui-data  # 关联 PVC
+          claimName: open-webui-data
 
 ---
 apiVersion: v1
@@ -43,10 +46,10 @@ kind: Service
 metadata:
   name: open-webui
 spec:
-  type: NodePort  # 启用 NodePort 暴露服务到集群外
+  type: NodePort
   selector:
     app: open-webui
   ports:
   - port: 8080
     targetPort: 8080
-    nodePort: 30002  # 外部访问端口 30002
+    nodePort: 30002  # 已改成 30002
