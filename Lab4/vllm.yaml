@@ -21,7 +21,7 @@ spec:
         - serve
         - /root/.cache/huggingface/Qwen3-4B-quantized.w4a16
         - --gpu-memory-utilization
-        - "0.35"
+        - "0.25"
         - --max-model-len
         - "4096"
         - --max-num-batched-tokens
