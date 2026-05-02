@@ -1,44 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vllm
+  name: asr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vllm
+      app: asr
   template:
     metadata:
       labels:
-        app: vllm
+        app: asr
     spec:
-      hostNetwork: true  # 启用主机网络，降低 GPU 内存访问延迟
       containers:
-      - name: vllm
-        image: ghcr.io/nvidia-ai-iot/vllm:latest-jetson-orin
-        command:
-        - vllm
-        - serve
-        - /root/.cache/huggingface/Qwen3-4B-quantized.w4a16
-        - --gpu-memory-utilization
-        - "0.50"
-        - --max-model-len
-        - "4096"
-        - --max-num-batched-tokens
-        - "2048"
+      - name: asr
+        image: faster-whisper:fastapi
+        ports:
+        - containerPort: 5092
         resources:
           limits:
             nvidia.com/gpu: 1  # 申请 1 块 GPU
-        volumeMounts:
-        - name: model
-          mountPath: /root/.cache/huggingface/Qwen3-4B-quantized.w4a16
-        - name: shm
-          mountPath: /dev/shm  # 挂载共享内存目录
-      volumes:
-      - name: model
-        hostPath:
-          path: /opt/models/Qwen3-4B-quantized.w4a16  # 主机上的模型目录
-      - name: shm
-        emptyDir:
-          medium: Memory  # 使用内存作为介质
-          sizeLimit: 8Gi   # 共享内存大小限制为 8Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: asr
+spec:
+  type: ClusterIP
+  selector:
+    app: asr
+  ports:
+  - port: 5092
+    targetPort: 5092
+  # A ClusterIP Service makes this pod reachable inside the cluster at:
+  #   http://asr:5092
+  # Other pods (e.g. open-webui) use this DNS name to call the ASR API.
