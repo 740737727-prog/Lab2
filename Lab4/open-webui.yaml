@@ -31,7 +31,7 @@ spec:
         - containerPort: 8080
         env:
         - name: WEBUI_URL
-          value: "http://0.0.0.0:30002"  # 这里必须和你改的端口一致
+          value: "http://192.168.85.122:30002"  # 这里必须和你改的端口一致
         volumeMounts:
         - name: data
           mountPath: /app/backend/data
