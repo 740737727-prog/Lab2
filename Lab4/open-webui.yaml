@@ -29,9 +29,6 @@ spec:
         image: ghcr.io/open-webui/open-webui:main
         ports:
         - containerPort: 8080
-        env:
-        - name: WEBUI_URL
-          value: "http://192.168.85.122:30002"  # 这里必须和你改的端口一致
         volumeMounts:
         - name: data
           mountPath: /app/backend/data
@@ -52,4 +49,4 @@ spec:
   ports:
   - port: 8080
     targetPort: 8080
-    nodePort: 30002  # 已改成 30002
+    nodePort: 30002
