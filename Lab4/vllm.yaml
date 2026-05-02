@@ -21,11 +21,11 @@ spec:
         - serve
         - /root/.cache/huggingface/Qwen3-4B-quantized.w4a16
         - --gpu-memory-utilization
-        - "0.25"
+        - "0.26"
         - --max-model-len
-        - "1024"
-        - --max-num-batched-tokens
         - "2048"
+        - --max-num-batched-tokens
+        - "1024"
         resources:
           limits:
             nvidia.com/gpu: 1  # 申请 1 块 GPU
