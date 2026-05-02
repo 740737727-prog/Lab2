@@ -19,9 +19,7 @@ spec:
         - containerPort: 8880
         resources:
           limits:
-            # TODO: Request 1 GPU (equivalent to `runtime: nvidia` in Docker Compose).
-            #       Key: nvidia.com/gpu
-            #       Value: 1
+            nvidia.com/gpu: 1  # 申请 1 块 GPU
 
 ---
 apiVersion: v1
